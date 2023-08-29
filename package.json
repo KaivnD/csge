@@ -14,22 +14,33 @@
     "react-dom": "^18.2.0"
   },
   "devDependencies": {
+    "@monaco-editor/react": "^4.5.2",
     "@react-three/drei": "^9.80.8",
     "@react-three/fiber": "^8.13.7",
     "@react-three/postprocessing": "^2.15.1",
+    "@types/node": "^20.5.7",
     "@types/react": "^18.2.15",
     "@types/react-dom": "^18.2.7",
     "@types/three": "^0.155.1",
     "@typescript-eslint/eslint-plugin": "^6.0.0",
     "@typescript-eslint/parser": "^6.0.0",
     "@vitejs/plugin-react-swc": "^3.3.2",
+    "axios": "^1.5.0",
     "eslint": "^8.45.0",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.3",
+    "monaco-editor": "^0.38.0",
     "polybooljs": "^1.2.0",
     "polygon-clipping": "^0.15.3",
+    "react-hotkeys-hook": "^4.4.1",
+    "react-reflex": "^4.1.0",
+    "react-split": "^2.0.14",
+    "react-use": "^17.4.0",
     "three": "^0.155.0",
     "typescript": "^5.0.2",
-    "vite": "^4.4.5"
+    "vite": "^4.4.5",
+    "vite-plugin-node-polyfills": "^0.11.3",
+    "vite-plugin-static-copy": "^0.17.0",
+    "vm": "^0.1.0"
   }
 }

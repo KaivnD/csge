@@ -23,6 +23,19 @@ body {
   height: 100vh;
 }
 
-#main-content {
+.split {
   height: 100%;
+  display: flex;
+  flex-direction: row;
+}
+
+.gutter {
+  background-color: #eee;
+  background-repeat: no-repeat;
+  background-position: 50%;
+}
+
+.gutter.gutter-horizontal {
+  background: #000;
+  cursor: col-resize;
 }

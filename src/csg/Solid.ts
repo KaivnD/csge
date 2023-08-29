@@ -10,7 +10,7 @@ import polybool from "polybooljs";
 // # class CSG
 // Holds a binary space partition tree representing a 3D solid. Two solids can
 // be combined using the `union()`, `subtract()`, and `intersect()` methods.
-export class Solid {
+export class Solid implements ISolid {
   polygons: Polygon[] = [];
   constructor() {}
   // Construct a CSG solid from a list of `Solid.Polygon` instances.
@@ -223,14 +223,11 @@ export class Solid {
 //       center: [0, 0, 0],
 //       radius: 1
 //     });
-export function cube(options?: {
-  center?: Vector;
-  radius?: number | [number, number, number];
-}) {
-  const c = options?.center || new Vector(0, 0, 0);
+export function cube(options?: CubeCreationArgs) {
+  const c = getVectorFromVectorLike(options?.center);
   const r = !options?.radius
     ? [1, 1, 1]
-    : options.radius instanceof Array
+    : Array.isArray(options.radius)
     ? options.radius
     : [options.radius, options.radius, options.radius];
 
@@ -290,13 +287,8 @@ export function cube(options?: {
 //       slices: 16,
 //       stacks: 8
 //     });
-export function sphere(options?: {
-  center?: Vector;
-  radius?: number;
-  slices?: number;
-  stacks?: number;
-}) {
-  const c = options?.center ?? new Vector(0, 0, 0);
+export function sphere(options?: SphereCreationArgs) {
+  const c = getVectorFromVectorLike(options?.center);
   const r = options?.radius || 1;
   const slices = options?.slices || 16;
   const stacks = options?.stacks || 8;
@@ -336,14 +328,9 @@ export function sphere(options?: {
 //       radius: 1,
 //       slices: 16
 //     });
-export function cylinder(options?: {
-  start?: Vector;
-  end?: Vector;
-  radius?: number;
-  slices?: number;
-}) {
-  const s = options?.start ?? new Vector(0, -1, 0);
-  const e = options?.end ?? new Vector(0, 1, 0);
+export function cylinder(options?: CylinderCreateionArgs) {
+  const s = getVectorFromVectorLike(options?.start, new Vector(0, -1, 0));
+  const e = getVectorFromVectorLike(options?.end, new Vector(0, 1, 0));
   const ray = e.minus(s);
   const r = options?.radius ?? 1;
   const slices = options?.slices ?? 16;
@@ -378,6 +365,20 @@ export function cylinder(options?: {
     polygons.push(new Polygon([end, point(1, t1, 1), point(1, t0, 1)]));
   }
   return Solid.fromPolygons(polygons);
+}
+
+function getVectorFromVectorLike(v?: VectorLikeInput, defaultValue?: Vector) {
+  if (v === undefined) return defaultValue ?? new Vector(0, 0, 0);
+  else if (typeof v === "number") return new Vector(v, v, v);
+  else if (Array.isArray(v)) {
+    if (v.length === 2) {
+      return new Vector(v[0], v[1], 0);
+    } else if (v.length >= 3) {
+      return new Vector(v[0], v[1], v[2]);
+    }
+  } else if (typeof v === "object") return new Vector(v.x, v.y, v.z);
+
+  throw new Error("参数错误");
 }
 
 class Vector3Float32Array {
@@ -431,7 +432,7 @@ function unionPlanarPolygon(polygons: Array<Polyline>): Array<Polyline> {
     .map((item) => ({ regions: [item], inverted: false }));
 
   let result = tmp[0];
-  for (var i = 1; i < tmp.length; i++) result = polybool.union(result, tmp[i]);
+  for (let i = 1; i < tmp.length; i++) result = polybool.union(result, tmp[i]);
   const xform2 = Transform.changeBasis(p, Plane.WorldXY)!;
 
   return result.regions.map((region) =>
@@ -441,4 +442,8 @@ function unionPlanarPolygon(polygons: Array<Polyline>): Array<Polyline> {
       return pt;
     })
   );
+}
+
+export function isSolid(object: unknown): object is Solid {
+  return object instanceof Solid;
 }

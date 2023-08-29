@@ -11,11 +11,11 @@ export function GridHelper({
   const yMin = xMin;
   const xMax = gridLineCount * gridSpacing;
   const yMax = xMax;
-  let minorLines: Line3[] = [];
-  let majorLines: Line3[] = [];
+  const minorLines: Line3[] = [];
+  const majorLines: Line3[] = [];
   for (let i = -gridLineCount; i <= gridLineCount; i++) {
-    let x = i * gridSpacing;
-    let y = i * gridSpacing;
+    const x = i * gridSpacing;
+    const y = i * gridSpacing;
     if (i === 0) {
       majorLines.push(new Line3(new Vector3(0, yMin, 0), new Vector3(0, 0, 0)));
       majorLines.push(new Line3(new Vector3(xMin, 0, 0), new Vector3(0, 0, 0)));
