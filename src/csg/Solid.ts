@@ -317,11 +317,11 @@ export function cube(x?: number, y?: number, z?: number) {
 //       slices: 16,
 //       stacks: 8
 //     });
-export function sphere(options?: SphereCreationArgs) {
-  const c = getVectorFromVectorLike(options?.center);
-  const r = options?.radius || 1;
-  const slices = options?.slices || 16;
-  const stacks = options?.stacks || 8;
+export function sphere(radius?: number) {
+  const c = Vector.Origin;
+  const r = radius ?? 1;
+  const slices = 16;
+  const stacks = 8;
   const polygons: Polygon[] = [];
   let vertices: Vertex[];
   function vertex(theta: number, phi: number) {

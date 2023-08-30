@@ -9,13 +9,7 @@ interface EditorProps {
 
 export const Editor: FC<EditorProps> = ({ onExec }) => {
   const [code, setCode] = useState<string>(`[
-  cube().subtract(
-    sphere({
-      radius: 1.3,
-      slices: 16,
-      stacks: 8,
-    })
-  )
+  cube().subtract(sphere(1.3))
 ]`);
   const onMountHandler = useCallback(
     (editor: monaco.editor.IStandaloneCodeEditor) => {

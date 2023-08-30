@@ -89,5 +89,5 @@ declare type CylinderCreateionArgs = {
 declare function cube(all?: number): ISolid;
 declare function cube(x: number, y: number): ISolid;
 declare function cube(x: number, y: number, z: number): ISolid;
-declare function sphere(args?: SphereCreationArgs): ISolid;
+declare function sphere(radius?: number): ISolid;
 declare function cylinder(args?: CylinderCreateionArgs): ISolid;
