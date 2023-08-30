@@ -185,6 +185,75 @@ export class Transform {
     return xform;
   }
 
+  public static diagonal(d0: number, d1: number, d2: number) {
+    const xform = Transform.identity();
+    xform.m_00 = d0;
+    xform.m_11 = d1;
+    xform.m_22 = d2;
+    return xform;
+  }
+
+  public static scale(
+    plane: Plane,
+    xScale: number,
+    yScale: number,
+    zScale: number
+  ) {
+    if (xScale === yScale && xScale === zScale) {
+      let xf = this.diagonal(xScale, yScale, zScale);
+
+      if (
+        plane.origin.x === 0 &&
+        plane.origin.y === 0 &&
+        plane.origin.z === 0
+      ) {
+        return xf;
+      }
+
+      let delta = plane.origin.clone().minus(Vector.Origin);
+      let t0 = this.translation(-delta.x, -delta.y, -delta.z);
+      let t1 = this.translation(delta.x, delta.y, delta.z);
+      return t1.multiply(xf.multiply(t0));
+    }
+
+    return this.shear(
+      plane,
+      plane.xaxis.times(xScale),
+      plane.yaxis.times(yScale),
+      plane.zaxis.times(zScale)
+    );
+  }
+
+  public static shear(plane: Plane, x: Vector, y: Vector, z: Vector) {
+    let delta = plane.origin.minus(Vector.Origin);
+    let t0 = this.translation(-delta.x, -delta.y, -delta.z);
+    let t1 = this.translation(delta.x, delta.y, delta.z);
+
+    let s0 = this.identity();
+    s0.m_00 = plane.xaxis.x;
+    s0.m_01 = plane.xaxis.y;
+    s0.m_02 = plane.xaxis.z;
+    s0.m_10 = plane.yaxis.x;
+    s0.m_11 = plane.yaxis.y;
+    s0.m_12 = plane.yaxis.z;
+    s0.m_20 = plane.zaxis.x;
+    s0.m_21 = plane.zaxis.y;
+    s0.m_22 = plane.zaxis.z;
+
+    let s1 = this.identity();
+    s1.m_00 = x.x;
+    s1.m_10 = x.y;
+    s1.m_20 = x.z;
+    s1.m_01 = y.x;
+    s1.m_11 = y.y;
+    s1.m_21 = y.z;
+    s1.m_02 = z.x;
+    s1.m_12 = z.y;
+    s1.m_22 = z.z;
+
+    return t1.multiply(s1.multiply(s0.multiply(t0)));
+  }
+
   public static changeBasis(source: Plane, target: Plane) {
     const p0: Vector = source.origin;
     const x0: Vector = source.xaxis;

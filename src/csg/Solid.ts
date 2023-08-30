@@ -184,6 +184,26 @@ export class Solid implements ISolid {
     return csg;
   }
 
+  scale(all: number): ISolid;
+  scale(x: number, y: number, z: number): ISolid;
+  scale(arg0: number, arg1?: number, arg2?: number): ISolid {
+    const all = arg1 === undefined && arg2 === undefined;
+    let xform = Transform.scale(
+      Plane.WorldXY,
+      arg0,
+      all ? arg0 : arg1 === undefined ? 1 : arg1,
+      all ? arg0 : arg2 === undefined ? 1 : arg2
+    );
+
+    const csg = this.clone();
+    csg.polygons.forEach(function (p) {
+      p.vertices.forEach((pt) => {
+        pt.pos.transform(xform);
+      });
+    });
+    return csg;
+  }
+
   toGeometry(): BufferGeometry {
     let triCount = 0;
     const ps = this.polygons;
