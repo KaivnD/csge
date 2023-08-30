@@ -68,7 +68,7 @@ export class Solid implements ISolid {
   //          |       |
   //          +-------+
   //
-  subtract(csg: Solid) {
+  subtract(csg: Solid): Solid {
     const a = new Node(this.clone().polygons);
     const b = new Node(csg.clone().polygons);
     a.invert();
@@ -109,10 +109,32 @@ export class Solid implements ISolid {
   }
   // Return a new Solid solid with solid and empty space switched. This solid is
   // not modified.
-  inverse() {
+  inverse(): Solid {
     const csg = this.clone();
     csg.polygons.map(function (p) {
       p.flip();
+    });
+    return csg;
+  }
+
+  move(all: number): ISolid;
+  move(x: number, y: number): ISolid;
+  move(x: number, y: number, z: number): ISolid;
+  move(x: number, y?: number, z?: number): ISolid {
+    let xform = Transform.identity();
+    if (y === undefined && z === undefined) {
+      xform = Transform.translation(x, x, x);
+    } else if (z === undefined && y !== undefined) {
+      xform = Transform.translation(x, y, 0);
+    } else if (z !== undefined && y !== undefined) {
+      xform = Transform.translation(x, y, z);
+    }
+
+    const csg = this.clone();
+    csg.polygons.forEach(function (p) {
+      p.vertices.forEach((pt) => {
+        pt.pos.transform(xform);
+      });
     });
     return csg;
   }
@@ -223,13 +245,21 @@ export class Solid implements ISolid {
 //       center: [0, 0, 0],
 //       radius: 1
 //     });
-export function cube(options?: CubeCreationArgs) {
-  const c = getVectorFromVectorLike(options?.center);
-  const r = !options?.radius
-    ? [1, 1, 1]
-    : Array.isArray(options.radius)
-    ? options.radius
-    : [options.radius, options.radius, options.radius];
+export function cube(all?: number): ISolid;
+export function cube(x: number, y: number): ISolid;
+export function cube(x: number, y: number, z: number): ISolid;
+export function cube(x?: number, y?: number, z?: number) {
+  const c = Vector.Origin;
+  let r = [1, 1, 1];
+  if (x !== undefined) {
+    if (y === undefined && z === undefined) {
+      r = [x, x, x];
+    } else if (z === undefined && y !== undefined) {
+      r = [x, y, 1];
+    } else if (z !== undefined && y !== undefined) {
+      r = [x, y, z];
+    }
+  }
 
   return Solid.fromPolygons(
     [

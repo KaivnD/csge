@@ -59,6 +59,10 @@ declare interface ISolid {
    * @param solid
    */
   inverse(): ISolid;
+
+  move(all: number): ISolid;
+  move(x: number, y: number): ISolid;
+  move(x: number, y: number, z: number): ISolid;
 }
 
 declare type VectorLikeInput =
@@ -66,10 +70,7 @@ declare type VectorLikeInput =
   | number[]
   | number;
 
-declare type CubeCreationArgs = {
-  center?: VectorLikeInput;
-  radius?: number | [number, number, number];
-};
+declare type CubeCreationArgs = number | [number, number, number];
 
 declare type SphereCreationArgs = {
   center?: VectorLikeInput;
@@ -85,6 +86,8 @@ declare type CylinderCreateionArgs = {
   slices?: number;
 };
 
-declare function cube(args?: CubeCreationArgs): ISolid;
+declare function cube(all?: number): ISolid;
+declare function cube(x: number, y: number): ISolid;
+declare function cube(x: number, y: number, z: number): ISolid;
 declare function sphere(args?: SphereCreationArgs): ISolid;
 declare function cylinder(args?: CylinderCreateionArgs): ISolid;
