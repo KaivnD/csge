@@ -1,16 +1,20 @@
 import MonacoEditor from "@monaco-editor/react";
-import { FC, useCallback, useState } from "react";
+import { FC, useCallback, useEffect, useState } from "react";
 import axios from "axios";
 import * as monaco from "monaco-editor";
-
+const STORE_KEY = "csge-code";
 interface EditorProps {
   onExec?(code: string): void;
 }
 
 export const Editor: FC<EditorProps> = ({ onExec }) => {
-  const [code, setCode] = useState<string>(`[
+  const [code, setCode] = useState<string>(
+    localStorage.getItem(STORE_KEY) ??
+      `[
   cube().subtract(sphere(1.3))
-]`);
+]`
+  );
+
   const onMountHandler = useCallback(
     (editor: monaco.editor.IStandaloneCodeEditor) => {
       editor.addAction({
@@ -21,10 +25,7 @@ export const Editor: FC<EditorProps> = ({ onExec }) => {
         label: "执行",
 
         // An optional array of keybindings for the action.
-        keybindings: [
-          monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter,
-          monaco.KeyMod.Shift | monaco.KeyMod.Alt | monaco.KeyCode.KeyE,
-        ],
+        keybindings: [monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter],
 
         // // A precondition for this action.
         // precondition: null,
@@ -56,7 +57,7 @@ export const Editor: FC<EditorProps> = ({ onExec }) => {
       onChange={(val) => {
         if (!val) return;
         setCode(val);
-        localStorage.setItem("csg-code", val);
+        localStorage.setItem(STORE_KEY, val);
       }}
       beforeMount={async (monaco) => {
         monaco.languages.typescript.typescriptDefaults.setCompilerOptions({

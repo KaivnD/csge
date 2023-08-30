@@ -139,6 +139,25 @@ export class Solid implements ISolid {
     return csg;
   }
 
+  rotate(x: number, y: number, z: number): ISolid {
+    const xform = Transform.rotation(
+      x * (Math.PI / 180),
+      Vector.UnitX,
+      Vector.Origin
+    );
+    const csg = this.clone();
+    csg.polygons.forEach(function (p) {
+      p.vertices.forEach((pt) => {
+        pt.pos.transform(xform);
+      });
+    });
+    return csg;
+  }
+
+  mirror(x: boolean, y: boolean, z: boolean): ISolid {
+    throw new Error();
+  }
+
   toGeometry(): BufferGeometry {
     let triCount = 0;
     const ps = this.polygons;
@@ -358,12 +377,12 @@ export function sphere(radius?: number) {
 //       radius: 1,
 //       slices: 16
 //     });
-export function cylinder(options?: CylinderCreateionArgs) {
-  const s = getVectorFromVectorLike(options?.start, new Vector(0, -1, 0));
-  const e = getVectorFromVectorLike(options?.end, new Vector(0, 1, 0));
+export function cylinder(radius?: number, height?: number) {
+  const s = new Vector(0, 0, -(height ?? 1));
+  const e = new Vector(0, 0, height ?? 1);
   const ray = e.minus(s);
-  const r = options?.radius ?? 1;
-  const slices = options?.slices ?? 16;
+  const r = radius ?? 1;
+  const slices = 16;
   const axisZ = ray.unit(),
     isY = Math.abs(axisZ.y) > 0.5;
   const axisX = new Vector(Number(isY), Number(!isY), 0).cross(axisZ).unit();
@@ -395,20 +414,6 @@ export function cylinder(options?: CylinderCreateionArgs) {
     polygons.push(new Polygon([end, point(1, t1, 1), point(1, t0, 1)]));
   }
   return Solid.fromPolygons(polygons);
-}
-
-function getVectorFromVectorLike(v?: VectorLikeInput, defaultValue?: Vector) {
-  if (v === undefined) return defaultValue ?? new Vector(0, 0, 0);
-  else if (typeof v === "number") return new Vector(v, v, v);
-  else if (Array.isArray(v)) {
-    if (v.length === 2) {
-      return new Vector(v[0], v[1], 0);
-    } else if (v.length >= 3) {
-      return new Vector(v[0], v[1], v[2]);
-    }
-  } else if (typeof v === "object") return new Vector(v.x, v.y, v.z);
-
-  throw new Error("参数错误");
 }
 
 class Vector3Float32Array {

@@ -63,6 +63,13 @@ declare interface ISolid {
   move(all: number): ISolid;
   move(x: number, y: number): ISolid;
   move(x: number, y: number, z: number): ISolid;
+
+  rotate(x: number, y: number, z: number): ISolid;
+
+  mirror(x: boolean, y: boolean, z: boolean): ISolid;
+
+  scale(all: number): ISolid;
+  scale(x: number, y: number, z: number): ISolid;
 }
 
 declare type VectorLikeInput =
@@ -90,4 +97,4 @@ declare function cube(all?: number): ISolid;
 declare function cube(x: number, y: number): ISolid;
 declare function cube(x: number, y: number, z: number): ISolid;
 declare function sphere(radius?: number): ISolid;
-declare function cylinder(args?: CylinderCreateionArgs): ISolid;
+declare function cylinder(radius?: number, height?: number): ISolid;

@@ -35,11 +35,13 @@ export function App() {
           camera={{
             up: [0, 0, 1],
             fov: 45,
-            position: [5, -5, 5],
+            position: [100, -100, 100],
+            near: 0.1,
+            far: 100000,
           }}
         >
           <Suspense fallback={null}>
-            <EffectComposer multisampling={8}>
+            <EffectComposer multisampling={16}>
               <SMAA />
             </EffectComposer>
           </Suspense>

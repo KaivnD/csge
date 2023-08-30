@@ -33,6 +33,8 @@ export const SolidObject: FC<SolidObjectProps> = ({ solids }) => {
         opacity: 0.5,
       });
       const mesh = new Mesh(geometry, material);
+      mesh.receiveShadow = true;
+      mesh.castShadow = true;
       group.add(mesh);
 
       solid.duplicateEdges().forEach((pls) =>

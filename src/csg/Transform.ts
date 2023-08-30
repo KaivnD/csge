@@ -1,6 +1,8 @@
 import { Plane } from "./Plane";
 import { Vector } from "./Vector";
 
+const ON_SQRT_EPSILON = 1.490116119385e-8;
+
 export type Matrix4LikeArray = [
   [number, number, number, number],
   [number, number, number, number],
@@ -213,6 +215,91 @@ export class Transform {
 
     const m = Transform.fromTransform(cb);
     return m.multiply(t1).multiply(f0);
+  }
+
+  public static rotation(angleRadians: number, axis: Vector, center: Vector) {
+    let sinAngle = Math.sin(angleRadians);
+    let cosAngle = Math.cos(angleRadians);
+    let xform = this.identity();
+
+    // Normalize input
+    if (
+      Math.abs(sinAngle) >= 1 - ON_SQRT_EPSILON &&
+      Math.abs(cosAngle) <= ON_SQRT_EPSILON
+    ) {
+      cosAngle = 0;
+      sinAngle = sinAngle < 0 ? -1 : 1;
+    }
+
+    if (
+      Math.abs(cosAngle) >= 1 - ON_SQRT_EPSILON &&
+      Math.abs(sinAngle) <= ON_SQRT_EPSILON
+    ) {
+      cosAngle = cosAngle < 0 ? -1 : 1;
+      sinAngle = 0;
+    }
+
+    if (
+      Math.abs(cosAngle * cosAngle + sinAngle * sinAngle - 1) > ON_SQRT_EPSILON
+    ) {
+      const cs = new Vector(cosAngle, sinAngle, 0).unit();
+      cosAngle = cs.x;
+      sinAngle = cs.y;
+    }
+
+    if (
+      Math.abs(cosAngle) > 1 - ON_SQRT_EPSILON ||
+      Math.abs(sinAngle) < ON_SQRT_EPSILON
+    ) {
+      cosAngle = cosAngle < 0 ? -1 : 1;
+      sinAngle = 0;
+    }
+
+    if (
+      Math.abs(sinAngle) > 1 - ON_SQRT_EPSILON ||
+      Math.abs(cosAngle) < ON_SQRT_EPSILON
+    ) {
+      cosAngle = 0;
+      sinAngle = sinAngle < 0 ? -1 : 1;
+    }
+
+    if (sinAngle !== 0 || cosAngle !== 1) {
+      const oneMinusCosAngle = 1 - cosAngle;
+
+      const a = axis.clone().unit();
+
+      xform.m_00 = a.x * a.x * oneMinusCosAngle + cosAngle;
+      xform.m_01 = a.x * a.y * oneMinusCosAngle - a.z * sinAngle;
+      xform.m_02 = a.x * a.z * oneMinusCosAngle + a.y * sinAngle;
+
+      xform.m_10 = a.y * a.x * oneMinusCosAngle + a.z * sinAngle;
+      xform.m_11 = a.y * a.y * oneMinusCosAngle + cosAngle;
+      xform.m_12 = a.y * a.z * oneMinusCosAngle - a.x * sinAngle;
+
+      xform.m_20 = a.z * a.x * oneMinusCosAngle - a.y * sinAngle;
+      xform.m_21 = a.z * a.y * oneMinusCosAngle + a.x * sinAngle;
+      xform.m_22 = a.z * a.z * oneMinusCosAngle + cosAngle;
+
+      if (center.x || center.y || center.z) {
+        xform.m_03 = -(
+          (xform.m_00 - 1) * center.x +
+          xform.m_01 * center.y +
+          xform.m_02 * center.z
+        );
+        xform.m_13 = -(
+          xform.m_10 * center.x +
+          (xform.m_11 - 1) * center.y +
+          xform.m_12 * center.z
+        );
+        xform.m_23 = -(
+          xform.m_20 * center.x +
+          xform.m_21 * center.y +
+          (xform.m_22 - 1) * center.z
+        );
+      }
+    }
+
+    return xform;
   }
 }
 
