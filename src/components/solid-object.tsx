@@ -29,8 +29,8 @@ export const SolidObject: FC<SolidObjectProps> = ({ solids }) => {
       const material = new MeshStandardMaterial({
         color: "#fff",
         metalness: 0.2,
-        transparent: true,
-        opacity: 0.5,
+        // transparent: true,
+        // opacity: 0.5,
       });
       const mesh = new Mesh(geometry, material);
       mesh.receiveShadow = true;

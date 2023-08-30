@@ -217,6 +217,36 @@ export class Transform {
     return m.multiply(t1).multiply(f0);
   }
 
+  public static mirror(
+    pointOnMirrorPlane: Vector,
+    normalToMirrorPlane: Vector
+  ) {
+    let P = pointOnMirrorPlane;
+    let N = normalToMirrorPlane.unit();
+
+    let V = N.times(N.x * P.x + N.y * P.y + N.z * P.z).times(2);
+
+    const xform = this.identity();
+    xform.m_00 = 1 - 2 * N.x * N.x;
+    xform.m_01 = -2 * N.x * N.y;
+    xform.m_02 = -2 * N.x * N.z;
+    xform.m_03 = V.x;
+    xform.m_10 = -2 * N.y * N.x;
+    xform.m_11 = 1 - 2 * N.y * N.y;
+    xform.m_12 = -2 * N.y * N.z;
+    xform.m_13 = V.y;
+    xform.m_20 = -2 * N.z * N.x;
+    xform.m_21 = -2 * N.z * N.y;
+    xform.m_22 = 1 - 2 * N.z * N.z;
+    xform.m_23 = V.z;
+    xform.m_30 = 0;
+    xform.m_31 = 0;
+    xform.m_32 = 0;
+    xform.m_33 = 1;
+
+    return xform;
+  }
+
   public static rotation(angleRadians: number, axis: Vector, center: Vector) {
     let sinAngle = Math.sin(angleRadians);
     let cosAngle = Math.cos(angleRadians);

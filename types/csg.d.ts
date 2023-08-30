@@ -64,9 +64,8 @@ declare interface ISolid {
   move(x: number, y: number): ISolid;
   move(x: number, y: number, z: number): ISolid;
 
-  rotate(x: number, y: number, z: number): ISolid;
-
-  mirror(x: boolean, y: boolean, z: boolean): ISolid;
+  rotate(x: number, y?: number, z?: number): ISolid;
+  mirror(x: boolean, y?: boolean, z?: boolean): ISolid;
 
   scale(all: number): ISolid;
   scale(x: number, y: number, z: number): ISolid;

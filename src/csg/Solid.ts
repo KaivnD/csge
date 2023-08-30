@@ -139,19 +139,19 @@ export class Solid implements ISolid {
     return csg;
   }
 
-  rotate(x: number, y: number, z: number): ISolid {
+  rotate(x: number, y?: number, z?: number): ISolid {
     const xxform = Transform.rotation(
       x * (Math.PI / 180),
       Vector.UnitX,
       Vector.Origin
     );
     const yxform = Transform.rotation(
-      y * (Math.PI / 180),
+      y ?? 0 * (Math.PI / 180),
       Vector.UnitY,
       Vector.Origin
     );
     const zxform = Transform.rotation(
-      z * (Math.PI / 180),
+      z ?? 0 * (Math.PI / 180),
       Vector.UnitZ,
       Vector.Origin
     );
@@ -164,8 +164,24 @@ export class Solid implements ISolid {
     return csg;
   }
 
-  mirror(x: boolean, y: boolean, z: boolean): ISolid {
-    throw new Error();
+  mirror(x: boolean, y?: boolean, z?: boolean): ISolid {
+    let xform = Transform.identity();
+    if (x)
+      xform = xform.multiply(Transform.mirror(Vector.Origin, Vector.UnitX));
+    if (y)
+      xform = xform.multiply(Transform.mirror(Vector.Origin, Vector.UnitY));
+    if (z)
+      xform = xform.multiply(Transform.mirror(Vector.Origin, Vector.UnitZ));
+    const csg = this.clone();
+    csg.polygons.forEach(function (p) {
+      p.vertices.forEach((pt) => {
+        pt.pos.transform(xform);
+        // pt.normal.transform(xform);
+      });
+      // p.plane.normal.transform(xform);
+      // if ((Number(x) + Number(y ?? 0) + Number(z ?? 0)) % 2 === 1) p.flip();
+    });
+    return csg;
   }
 
   toGeometry(): BufferGeometry {
