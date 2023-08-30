@@ -140,15 +140,25 @@ export class Solid implements ISolid {
   }
 
   rotate(x: number, y: number, z: number): ISolid {
-    const xform = Transform.rotation(
+    const xxform = Transform.rotation(
       x * (Math.PI / 180),
       Vector.UnitX,
+      Vector.Origin
+    );
+    const yxform = Transform.rotation(
+      y * (Math.PI / 180),
+      Vector.UnitY,
+      Vector.Origin
+    );
+    const zxform = Transform.rotation(
+      z * (Math.PI / 180),
+      Vector.UnitZ,
       Vector.Origin
     );
     const csg = this.clone();
     csg.polygons.forEach(function (p) {
       p.vertices.forEach((pt) => {
-        pt.pos.transform(xform);
+        pt.pos.transform(xxform.multiply(yxform).multiply(zxform));
       });
     });
     return csg;
